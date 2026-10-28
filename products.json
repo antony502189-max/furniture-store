@@ -1,0 +1,80 @@
+[
+  {
+    "id": "modern-armchair",
+    "title": "Modern Armchair",
+    "price": 300,
+    "image": "assets/shopfeatured-imgImg.png"
+  },
+  {
+    "id": "egg-chair",
+    "title": "Egg chair",
+    "price": 280,
+    "image": "assets/shopcatalog-imgImg10.png"
+  },
+  {
+    "id": "chaise-lounge",
+    "title": "Chaise Lounge",
+    "price": 450,
+    "image": "assets/shopcatalog-imgImg11.png"
+  },
+  {
+    "id": "modern-chair",
+    "title": "Modern Chair",
+    "price": 250,
+    "image": "assets/home-imgImg12.png"
+  },
+  {
+    "id": "folding-table",
+    "title": "Folding Table",
+    "price": 160,
+    "image": "assets/shopfeatured-imgImg1.png"
+  },
+  {
+    "id": "classic-armchair",
+    "title": "Classic Armchair",
+    "price": 180,
+    "image": "assets/shopcatalog-imgImg6.png"
+  },
+  {
+    "id": "papasan-chair",
+    "title": "Papasan Chair",
+    "price": 250,
+    "image": "assets/shopcatalog-imgImg3.png"
+  },
+  {
+    "id": "coffee-table",
+    "title": "Coffee Table",
+    "price": 150,
+    "image": "assets/shopcatalog-imgImg2.png"
+  },
+  {
+    "id": "classic-chair",
+    "title": "Classic Chair",
+    "price": 99,
+    "image": "assets/shopfeatured-imgImg2.png"
+  },
+  {
+    "id": "bar-stool",
+    "title": "Bar Stool",
+    "price": 250,
+    "image": "assets/shopcatalog-imgImg7.png"
+  },
+  {
+    "id": "nightstand",
+    "title": "Nightstand",
+    "price": 80,
+    "image": "assets/shopcatalog-imgImg8.png"
+  },
+  {
+    "id": "white-table",
+    "title": "White Table",
+    "price": 250,
+    "image": "assets/shopcatalog-imgImg9.png"
+  },
+  {
+    "id": "modern-bed",
+    "title": "Modern Bed",
+    "price": 680,
+    "image": "assets/shopcatalog-imgImg12.png"
+  }
+]
