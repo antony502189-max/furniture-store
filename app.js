@@ -105,7 +105,7 @@ function fromCard(card) {
     title: card.dataset.title,
     color: card.dataset.selectedColor || p?.colors?.[0] || "Grey",
     price: p?.price ?? Number(card.dataset.price),
-    image: $('img[src$=".png"]', card)?.getAttribute("src"),
+    image: $("[data-product-photo]", card)?.getAttribute("src"),
   };
 }
 function product(id) {

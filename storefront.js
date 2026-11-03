@@ -122,9 +122,9 @@ function collection(type) {
 }
 let galleryIndex = 0;
 const gallery = [
-  "assets/home-imgImgButton.png",
-  "assets/home-imgImg12.png",
-  "assets/shopcatalog-imgImg2.png",
+  "assets/photos/living-room.webp",
+  "assets/photos/bedroom.webp",
+  "assets/photos/warm-living-room.webp",
 ];
 function showGallery() {
   showPanel(
@@ -445,7 +445,8 @@ function enhanceStorefront() {
     const count = $$('[data-name="Text"] p', link)[1];
     if (count)
       count.textContent =
-        products.filter((p) => p.inCatalog && p.category === label).length + " products";
+        products.filter((p) => p.inCatalog && p.category === label).length +
+        " products";
   });
   $$(
     'input[type="checkbox"]',
@@ -458,15 +459,17 @@ function enhanceStorefront() {
         row,
       ) ||
       $$(":scope>div", row).find((x) => /^\d+$/.test(x.textContent.trim()));
-    const total = products.filter((p) => p.inCatalog).filter((p) =>
-      input.name === "categories"
-        ? input.value === "Sale"
-          ? p.sale
-          : p.category === input.value
-        : input.name === "color"
-          ? p.colors?.includes(input.value)
-          : p.material === input.value,
-    ).length;
+    const total = products
+      .filter((p) => p.inCatalog)
+      .filter((p) =>
+        input.name === "categories"
+          ? input.value === "Sale"
+            ? p.sale
+            : p.category === input.value
+          : input.name === "color"
+            ? p.colors?.includes(input.value)
+            : p.material === input.value,
+      ).length;
     if (count) count.textContent = total;
   });
 }
@@ -485,6 +488,16 @@ fetch("products.json", { cache: "no-store" })
   })
   .then((data) => {
     products = data;
+    // Existing browser selections receive the new canonical product photographs.
+    favorites = favorites.map((item) => ({
+      ...item,
+      ...products.find((p) => p.id === item.id),
+    }));
+    cart = cart.map((item) => ({
+      ...item,
+      ...products.find((p) => p.id === item.id),
+    }));
+    if (favorites.length || cart.length) persist();
     enhanceCatalog();
     enhanceStorefront();
   });

@@ -3,7 +3,7 @@
     "id": "modern-armchair",
     "title": "Modern Armchair",
     "price": 250,
-    "image": "assets/shopcatalog-imgImg5.png",
+    "image": "assets/photos/reading-corner.webp",
     "category": "Armchairs",
     "material": "Leather",
     "colors": [
@@ -20,7 +20,7 @@
     "id": "egg-chair",
     "title": "Egg chair",
     "price": 280,
-    "image": "assets/shopcatalog-imgImg10.png",
+    "image": "assets/photos/egg-chair.webp",
     "category": "Chairs",
     "material": "Leather",
     "colors": [
@@ -35,9 +35,9 @@
   },
   {
     "id": "chaise-lounge",
-    "title": "Chaise Lounge",
+    "title": "Lounge Chair",
     "price": 450,
-    "image": "assets/shopcatalog-imgImg11.png",
+    "image": "assets/photos/lounge-chair.webp",
     "category": "Chairs",
     "material": "Leather",
     "colors": [
@@ -54,7 +54,7 @@
     "id": "modern-chair",
     "title": "Modern Chair",
     "price": 250,
-    "image": "assets/home-imgImg12.png",
+    "image": "assets/photos/modern-chair.webp",
     "category": "Chairs",
     "material": "Leather",
     "colors": [
@@ -69,9 +69,9 @@
   },
   {
     "id": "folding-table",
-    "title": "Folding Table",
+    "title": "Console Table",
     "price": 160,
-    "image": "assets/shopcatalog-imgImg13.png",
+    "image": "assets/photos/console-table.webp",
     "category": "Tables",
     "material": "Wood",
     "colors": [
@@ -88,7 +88,7 @@
     "id": "classic-armchair",
     "title": "Classic Armchair",
     "price": 180,
-    "image": "assets/shopcatalog-imgImg6.png",
+    "image": "assets/photos/classic-armchair.webp",
     "category": "Armchairs",
     "material": "Leather",
     "colors": [
@@ -103,9 +103,9 @@
   },
   {
     "id": "papasan-chair",
-    "title": "Papasan Chair",
+    "title": "Rattan Chair",
     "price": 250,
-    "image": "assets/shopcatalog-imgImg3.png",
+    "image": "assets/photos/rattan-chair.webp",
     "category": "Chairs",
     "material": "Leather",
     "colors": [
@@ -122,7 +122,7 @@
     "id": "coffee-table",
     "title": "Coffee Table",
     "price": 150,
-    "image": "assets/shopcatalog-imgImg2.png",
+    "image": "assets/photos/coffee-table.webp",
     "category": "Tables",
     "material": "Wood",
     "colors": [
@@ -139,7 +139,7 @@
     "id": "classic-chair",
     "title": "Classic Chair",
     "price": 99,
-    "image": "assets/shopcatalog-imgImg4.png",
+    "image": "assets/photos/upholstered-chair.webp",
     "category": "Chairs",
     "material": "Leather",
     "colors": [
@@ -156,7 +156,7 @@
     "id": "bar-stool",
     "title": "Bar Stool",
     "price": 250,
-    "image": "assets/shopcatalog-imgImg7.png",
+    "image": "assets/photos/oak-stool.webp",
     "category": "Chairs",
     "material": "Metal",
     "colors": [
@@ -173,7 +173,7 @@
     "id": "nightstand",
     "title": "Nightstand",
     "price": 80,
-    "image": "assets/shopcatalog-imgImg8.png",
+    "image": "assets/photos/nightstand.webp",
     "category": "Cabinets",
     "material": "Wood",
     "colors": [
@@ -190,7 +190,7 @@
     "id": "white-table",
     "title": "White Table",
     "price": 250,
-    "image": "assets/shopcatalog-imgImg9.png",
+    "image": "assets/photos/white-table.webp",
     "category": "Tables",
     "material": "Wood",
     "colors": [
@@ -207,7 +207,7 @@
     "id": "modern-bed",
     "title": "Modern Bed",
     "price": 680,
-    "image": "assets/shopcatalog-imgImg12.png",
+    "image": "assets/photos/bed.webp",
     "category": "Beds",
     "material": "Wood",
     "colors": [

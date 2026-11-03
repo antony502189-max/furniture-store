@@ -19,7 +19,7 @@ Favorites, color variants, shopping bag quantities, a local profile/address and 
 
 Contact and newsletter forms validate input and prepare an encoded email draft, with a downloadable text alternative. The visitor chooses **Open email app**, reviews the recipient, and sends it themselves. They do not claim that a message was delivered or a subscription activated. The email address, telephone numbers and address are the original template contacts; replace them with the real store contacts before using enquiries commercially. Payment, automatic email delivery, newsletter processing and remote accounts need external services.
 
-`products.json` is the source for prices and sample filter metadata. The 12 catalog items have working search, categories, room links, colors, material/brand filters, sorting and two pages of six items. A Modern Chair is also shown on the home page. Empty categories show a recoverable no-results state. The actual image assets are unchanged: choosing a color records that variant rather than recoloring the supplied image.
+`products.json` is the source for prices, product photographs and sample filter metadata. The 12 catalog items have working search, categories, room links, colors, material/brand filters, sorting and two pages of six items. A Modern Chair is also shown on the home page. Empty categories show a recoverable no-results state. Choosing a color records that demo variant rather than recoloring the stock photograph.
 
 The former video placeholder opens a browsable image showroom, because no video was supplied. Social controls share the site or open furniture inspiration; they do not invent store social profiles. All collection calls to action, sidebar bestsellers, service links, telephone/email links and the map link have destinations.
 
@@ -37,7 +37,7 @@ npx --yes --package @playwright/cli playwright-cli -s=furniture-check run-code -
 
 The checks use the opened page's directory as their base, so the same commands can verify the deployed GitHub Pages URL. Email and payment delivery are intentionally outside the static site's capabilities; no real messages or orders are sent during verification.
 
-The source Figma file contains blurred room photographs and gray product silhouettes; those exact supplied assets are retained. Original photography and video were not included in the template. Mobile layouts are adapted from the desktop designs.
+The original template's blurred rooms and gray silhouettes have been replaced with 28 locally bundled Unsplash stock photographs: furniture, interiors and sample portraits. The WebP files total about 2 MB, use responsive image frames, and load without external image requests. The original source URLs and license are recorded in `assets/photos/sources.json` and `assets/photos/README.md`. These photographs illustrate the demo catalog and sample team; they do not identify verified store inventory or employees. Existing favorites and bag items receive the updated photographs automatically. Mobile layouts are adapted from the desktop designs.
 
 ## Attribution
 
