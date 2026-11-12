@@ -1,444 +1,56 @@
-/* Static storefront interactions. Data stays in this browser. */
-const $ = (s, r = document) => r.querySelector(s),
-  $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const node = (id) => $(`[data-node-id="${id}"]`);
-const safe = (s) =>
-  String(s).replace(
-    /[&<>"']/g,
-    (c) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-        c
-      ],
-  );
-const money = (n) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(n);
-function readSaved(key, fallback) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-let favorites = readSaved("furniture-favorites", []),
-  cart = readSaved("furniture-cart", []);
-const validItem = (p) =>
-  p &&
-  typeof p.id === "string" &&
-  typeof p.title === "string" &&
-  Number.isFinite(p.price) &&
-  p.price >= 0 &&
-  typeof p.image === "string" &&
-  /^assets\/[\w./-]+$/.test(p.image);
-favorites = Array.isArray(favorites) ? favorites.filter(validItem) : [];
-cart = Array.isArray(cart)
-  ? cart.filter(
-      (p) => validItem(p) && Number.isInteger(p.quantity) && p.quantity > 0,
-    )
-  : [];
-let products = [];
-const panel = $("#panel");
-let returnFocus = null;
-let toastTimer;
-function toast(message) {
-  $("#toast").textContent = message;
-  $("#toast").classList.add("visible");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => $("#toast").classList.remove("visible"), 3000);
-}
-function persist() {
-  try {
-    localStorage.setItem("furniture-favorites", JSON.stringify(favorites));
-    localStorage.setItem("furniture-cart", JSON.stringify(cart));
-  } catch {
-    toast(
-      "Browser storage is unavailable. Your selections will last for this visit.",
-    );
-  }
-  updateCounters();
-}
-function updateCounters() {
-  $$('[data-count="favorites"]').forEach(
-    (n) => (n.textContent = favorites.length),
-  );
-  $$('[data-count="cart"]').forEach(
-    (n) => (n.textContent = cart.reduce((s, p) => s + p.quantity, 0)),
-  );
-  $$('[data-action="favorite"]').forEach((b) => {
-    const saved = favorites.some(
-      (p) => p.id === b.closest("[data-product]")?.dataset.product,
-    );
-    b.setAttribute("aria-pressed", String(saved));
-  });
-}
-function showPanel(title, body) {
-  if (!panel.open) returnFocus = document.activeElement;
-  $("#panel-content").innerHTML =
-    `<h2 id="panel-title" class="dialog-heading">${safe(title)}</h2>${body}`;
-  if (!panel.open) panel.showModal();
-  $("#panel-title").tabIndex = -1;
-  $("#panel-title").focus();
-}
-panel.addEventListener("close", () => {
-  if (returnFocus?.isConnected) returnFocus.focus();
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(n);
+const byId=id=>PRODUCTS.find(p=>p.id===id);
+const KEY='fstore-v2-';
+function read(key,fallback){try{return JSON.parse(localStorage.getItem(KEY+key))??fallback}catch{return fallback}}
+function save(key,value){try{localStorage.setItem(KEY+key,JSON.stringify(value));return true}catch{notify('Память браузера недоступна. Скачайте подборку, чтобы сохранить её.');return false}}
+function cleanCart(data){return Array.isArray(data)?data.filter(x=>x&&byId(x.id)&&Number.isInteger(x.quantity)&&x.quantity>0&&x.quantity<=99&&byId(x.id).colors.includes(x.color)).map(x=>({id:x.id,color:x.color,quantity:x.quantity})):[]}
+let cart=cleanCart(read('cart',[]));
+let favorites=read('favorites',[]);favorites=Array.isArray(favorites)?[...new Set(favorites.filter(id=>byId(id)))]:[];
+let profile=read('profile',{});profile=profile&&typeof profile==='object'&&!Array.isArray(profile)?Object.fromEntries(['name','email','address'].map(k=>[k,typeof profile[k]==='string'?profile[k].slice(0,300):''])):{};
+let drafts=read('drafts',[]);drafts=Array.isArray(drafts)?drafts.filter(d=>d&&typeof d.id==='string'&&typeof d.date==='string'&&Array.isArray(d.items)&&d.items.length>0&&d.items.every(x=>x&&byId(x.id)&&Number.isInteger(x.quantity)&&x.quantity>0&&x.quantity<=99&&byId(x.id).colors.includes(x.color))&&d.customer&&typeof d.customer==='object').slice(0,50):[];
+const panel=$('#panel');let restoreFocus=null,toastTimer;
+function notify(text){const target=panel.open?$('#dialog-status'):$('#toast');target.textContent=text;if(!panel.open){target.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>target.classList.remove('visible'),3600)}}
+function showPanel(title,html){if(!panel.open)restoreFocus=document.activeElement;$('#panel-content').innerHTML=`<h2 class="dialog-heading" id="panel-title" tabindex="-1">${escapeHTML(title)}</h2>${html}`;$('#dialog-status').textContent='';$('#toast').classList.remove('visible');if(!panel.open)panel.showModal();$('#panel-title').focus()}
+panel.addEventListener('close',()=>{if(restoreFocus?.isConnected)restoreFocus.focus()});
+panel.addEventListener('click',e=>{if(e.target!==panel)return;const r=panel.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)panel.close()});
+function counters(){for(const [kind,count]of[['cart',cart.reduce((n,p)=>n+p.quantity,0)],['favorites',favorites.length]])$$(`[data-count="${kind}"]`).forEach(n=>{n.textContent=count;n.hidden=!count});$$('[data-favorite]').forEach(b=>{const active=favorites.includes(b.dataset.favorite);b.setAttribute('aria-pressed',String(active));b.textContent=active?'♥':'♡';b.setAttribute('aria-label',(active?'Убрать из избранного: ':'В избранное: ')+byId(b.dataset.favorite).title)})}
+function total(items=cart){return items.reduce((n,x)=>n+byId(x.id).price*x.quantity,0)}
+function addItems(items){let added=0;for(const x of items){const p=byId(x.id);if(!p)continue;const color=p.colors.includes(x.color)?x.color:p.colors[0];const existing=cart.find(i=>i.id===p.id&&i.color===color);if(existing){if(existing.quantity>=99)continue;existing.quantity++}else cart.push({id:p.id,color,quantity:1});added++}if(added){save('cart',cart);counters();notify(added===1?'Товар добавлен в корзину.':'В корзину добавлено товаров: '+added)}else notify('Максимум 99 штук одного варианта.');return added}
+const colors={'Терракота':'#a86650','Бежевый':'#d0bea6','Серый':'#9a9e98','Зелёный':'#71816b','Коричневый':'#9a7352','Белый':'#f5f3eb','Чёрный':'#353a35'};
+function viewProduct(id,color){const p=byId(id);if(!p)return;const selected=p.colors.includes(color)?color:p.colors[0];showPanel(p.title,`<div class="dialog-product" data-active-product="${id}" data-active-color="${selected}"><img src="${p.image}" alt="${escapeHTML(p.title)}"><div><div class="price">${money(p.price)}</div><p>${escapeHTML(p.description)}</p><p class="small muted">${p.category} · ${p.material} · ${p.room}</p><div class="variant-label" id="variant-label">Цвет: ${selected}</div><div class="color-options" role="group" aria-label="Цвет мебели">${p.colors.map(c=>`<button style="--swatch:${colors[c]}" data-color="${c}" aria-label="${c}" aria-pressed="${c===selected}"></button>`).join('')}</div><p class="variant-note">Цвет сохраняется в подборке. Фотография показывает один из вариантов.</p><button class="button" data-add="${id}">Добавить в корзину ＋</button><button class="text-link" data-action="cart">Перейти в корзину →</button></div></div>`)}
+function collection(kind){const isCart=kind==='cart',items=isCart?cart:favorites.map(id=>({id,color:byId(id).colors[0],quantity:1}));showPanel(isCart?'Ваша корзина':'Избранное',items.length?items.map(x=>{const p=byId(x.id),key=x.id+'|'+x.color;return `<div class="collection-row"><img src="${p.image}" alt="${escapeHTML(p.title)}"><div><h3><button data-view="${x.id}" data-view-color="${x.color}">${escapeHTML(p.title)}</button></h3><p>${x.color} · ${money(p.price)}</p>${isCart?`<div class="quantity"><button data-quantity="${key}" data-delta="-1" aria-label="Уменьшить количество: ${escapeHTML(p.title)}">−</button><output aria-label="Количество">${x.quantity}</output><button data-quantity="${key}" data-delta="1" aria-label="Увеличить количество: ${escapeHTML(p.title)}" ${x.quantity===99?'disabled':''}>＋</button><strong>${money(p.price*x.quantity)}</strong></div>`:`<button class="text-link" data-add="${x.id}">В корзину ＋</button>`}</div><button class="row-remove" data-remove="${key}" data-kind="${kind}" aria-label="Удалить: ${escapeHTML(p.title)}">×</button></div>`}).join('')+(isCart?`<div class="cart-total"><span>Итого</span><strong>${money(total())}</strong></div><div class="dialog-actions"><button class="button" data-action="checkout">Сохранить подборку ↗</button><a class="text-link" href="shop.html">Продолжить выбор</a></div><p class="small muted privacy-note">Демонстрационная корзина: оплата и отправка заказов не подключены. Подборку можно скачать.</p>`:''):`<div class="empty-state"><span aria-hidden="true">${isCart?'♧':'♡'}</span><h2>${isCart?'Здесь будет ваш уют':'Сохраните то, что нравится'}</h2><p>${isCart?'Добавьте мебель из каталога или соберите набор в 3D-комнате.':'Нажмите на сердечко в карточке товара.'}</p><a class="button" href="shop.html">Посмотреть коллекцию ↗</a></div>`)}
+function profileField(label,name,type='text',required=false){return `<label>${label}<input name="${name}" type="${type}" value="${escapeHTML(profile[name])}" autocomplete="${{name:'name',email:'email',address:'street-address'}[name]}" maxlength="300" ${required?'required':''}></label>`}
+function showProfile(){showPanel('Мой профиль',`<p class="small muted">Данные сохраняются только в этом браузере. Регистрация не требуется.</p><form class="dialog-form" data-form="profile">${profileField('Имя','name')}${profileField('Электронная почта','email','email')}${profileField('Адрес','address')}<button class="button">Сохранить данные</button></form><div class="dialog-actions"><button class="text-link" data-action="orders">Мои подборки</button><button class="text-link" data-action="clear-profile">Удалить данные профиля</button></div>`)}
+function checkout(){if(!cart.length)return collection('cart');showPanel('Сохранить подборку',`<p>В подборке ${cart.reduce((n,x)=>n+x.quantity,0)} шт. на <strong>${money(total())}</strong></p><p class="small muted privacy-note">Сохраните список мебели на устройстве или скачайте его. Заказ не отправляется, деньги не списываются.</p><form class="dialog-form" data-form="checkout">${profileField('Имя для подборки','name','text',true)}${profileField('Электронная почта (необязательно)','email','email')}<button class="button">Сохранить подборку</button></form>`)}
+function showOrders(){showPanel('Мои подборки',drafts.length?`<p class="small muted">Сохранены на этом устройстве. Вы можете скачать список мебели.</p>${drafts.map(d=>`<article class="order-row"><h3>Подборка ${escapeHTML(d.id)}</h3><p>${escapeHTML(d.date)} · ${money(total(d.items))}</p><div class="dialog-actions"><button class="text-link" data-download="${escapeHTML(d.id)}">Скачать список</button><button class="text-link" data-delete-draft="${escapeHTML(d.id)}">Удалить подборку</button></div></article>`).join('')}`:'<div class="empty-state"><h2>Начните с любимых вещей</h2><p>Добавьте товары в корзину и сохраните свою первую подборку.</p><button class="button" data-action="cart">Открыть корзину</button></div>')}
+function download(text,name){const url=URL.createObjectURL(new Blob(['\ufeff'+text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+function draftText(d){return `f Store — подборка ${d.id}\n${d.date}\n\n${d.items.map(x=>`${byId(x.id).title} · ${x.color} · ${x.quantity} шт. — ${money(byId(x.id).price*x.quantity)}`).join('\n')}\n\nИтого: ${money(total(d.items))}\nИмя: ${d.customer.name||''}\nПочта: ${d.customer.email||''}\n\nДемонстрационная подборка. Заказ не отправлен, оплата не производилась.`}
+const services={delivery:['Доставка и сборка','<p>В этом демонстрационном магазине можно собрать и скачать список мебели. Реальная доставка не оформляется.</p><p>Перед покупкой мебели измерьте дверные проёмы, лестницы и место установки. Условия доставки и сборки уточняются у продавца.</p>'],returns:['Возврат','<p>Демонстрационный сайт не продаёт и не принимает товары. Для реального возврата обратитесь к продавцу с номером заказа и описанием причины.</p>'],faq:['Частые вопросы','<details open><summary>Как собрать набор мебели?</summary><p>В каталоге добавьте понравившиеся товары в корзину. В 3D-комнате можно выбрать сразу несколько предметов и добавить их одним нажатием.</p></details><details><summary>Где хранятся мои данные?</summary><p>Избранное, корзина, профиль и подборки сохраняются в этом браузере на вашем устройстве. Очистка данных браузера удалит их.</p></details><details><summary>Как управлять 3D-комнатой?</summary><p>Потяните мышью или пальцем, чтобы осмотреться. Колёсико или два пальца приближают сцену. В режиме прогулки используйте W A S D или экранные стрелки.</p></details><details><summary>Можно ли оформить настоящий заказ?</summary><p>Сейчас это демонстрационный магазин. Можно скачать подборку, но платежи, доставка и отправка сообщений не подключены.</p></details>']};
+function service(key){const item=services[key];if(item)showPanel(item[0],`<div class="service-copy">${item[1]}</div><div class="dialog-actions"><a class="button" href="contact.html">Подготовить вопрос ↗</a><a class="text-link" href="shop.html">В каталог</a></div>`)}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.view)return viewProduct(b.dataset.view,b.dataset.viewColor);
+ if(b.dataset.add){const active=b.closest('[data-active-product]');const color=active?.dataset.activeColor;addItems([{id:b.dataset.add,color}]);return}
+ if(b.dataset.favorite){const id=b.dataset.favorite;favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];save('favorites',favorites);counters();notify(favorites.includes(id)?'Сохранено в избранном.':'Удалено из избранного.');return}
+ if(b.dataset.color){const active=b.closest('[data-active-product]');if(!active)return;active.dataset.activeColor=b.dataset.color;$$('[data-color]',active).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('#variant-label').textContent='Цвет: '+b.dataset.color;return}
+ if(b.dataset.quantity){const [id,color]=b.dataset.quantity.split('|'),item=cart.find(x=>x.id===id&&x.color===color);if(!item)return;item.quantity=Math.min(99,item.quantity+Number(b.dataset.delta));cart=cart.filter(x=>x.quantity>0);save('cart',cart);collection('cart');counters();const next=$$('[data-quantity]').find(x=>x.dataset.quantity===b.dataset.quantity&&x.dataset.delta===b.dataset.delta&&!x.disabled);next?.focus();return}
+ if(b.dataset.remove){const [id,color]=b.dataset.remove.split('|');if(b.dataset.kind==='cart'){cart=cart.filter(x=>x.id!==id||x.color!==color);save('cart',cart)}else{favorites=favorites.filter(x=>x!==id);save('favorites',favorites)}counters();collection(b.dataset.kind);return}
+ if(b.dataset.download){const d=drafts.find(x=>x.id===b.dataset.download);if(d)download(draftText(d),'fstore-'+d.id+'.txt');return}
+ if(b.dataset.deleteDraft){drafts=drafts.filter(x=>x.id!==b.dataset.deleteDraft);save('drafts',drafts);showOrders();return}
+ if(b.dataset.service)return service(b.dataset.service);
+ switch(b.dataset.action){case'close':panel.close();break;case'cart':case'favorites':collection(b.dataset.action);break;case'account':showProfile();break;case'orders':showOrders();break;case'checkout':checkout();break;case'clear-profile':profile={};save('profile',profile);showProfile();notify('Данные профиля удалены.');break;case'menu':{const nav=$('#main-nav');nav.classList.toggle('open');const open=nav.classList.contains('open');b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');break}case'filters':{const el=$('.filters');el.classList.toggle('open');b.setAttribute('aria-expanded',String(el.classList.contains('open')));break}}
 });
-panel.addEventListener("click", (e) => {
-  if (e.target === panel) {
-    const r = panel.getBoundingClientRect();
-    if (
-      e.clientX < r.left ||
-      e.clientX > r.right ||
-      e.clientY < r.top ||
-      e.clientY > r.bottom
-    )
-      panel.close();
-  }
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.open){$('#main-nav').classList.remove('open');$('[data-action="menu"]').setAttribute('aria-expanded','false');$('[data-action="menu"]').setAttribute('aria-label','Открыть меню')}});
+document.addEventListener('click',e=>{if(!e.target.closest('.header')){$('#main-nav').classList.remove('open');$('[data-action="menu"]').setAttribute('aria-expanded','false');$('[data-action="menu"]').setAttribute('aria-label','Открыть меню')}});
+document.addEventListener('submit',e=>{const f=e.target;if(!f.matches('[data-form],#contact-form'))return;e.preventDefault();if(!f.reportValidity())return;const data=Object.fromEntries([...new FormData(f)].map(([k,v])=>[k,String(v).trim()]));for(const input of $$('[required]',f)){if(!input.value.trim()){input.setCustomValidity('Заполните это поле.');input.reportValidity();input.addEventListener('input',()=>input.setCustomValidity(''),{once:true});return}}
+ if(f.dataset.form==='profile'){profile=data;const saved=save('profile',profile);notify(saved?'Данные сохранены на этом устройстве.':'Данные сохранены только на время визита.');return}
+ if(f.dataset.form==='checkout'){if(!cart.length)return collection('cart');const d={id:Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,5).toUpperCase(),date:new Date().toLocaleDateString('ru-RU'),customer:data,items:cart.map(x=>({...x}))};drafts.unshift(d);drafts=drafts.slice(0,50);const saved=save('drafts',drafts);showOrders();notify(saved?'Подборка сохранена. Её можно скачать.':'Скачайте подборку: память браузера недоступна.');return}
+ if(f.id==='contact-form'){const text=`Обращение в f Store\nТема: ${data.subject}\nИмя: ${data.name}\nПочта: ${data.email}\n\n${data.message}\n\nЧерновик. Сообщение не отправлено. Контакты магазина демонстрационные.`;$('#contact-feedback').innerHTML='<p>Черновик готов. Сообщение не отправлено.</p><button class="button outline" type="button" id="download-message">Скачать обращение</button>';$('#download-message').addEventListener('click',()=>download(text,'fstore-обращение.txt'))}
 });
-function fromCard(card) {
-  const p = products.find((p) => p.id === card.dataset.product);
-  return {
-    ...p,
-    id: card.dataset.product,
-    title: card.dataset.title,
-    color: card.dataset.selectedColor || p?.colors?.[0] || "Grey",
-    price: p?.price ?? Number(card.dataset.price),
-    image: $("[data-product-photo]", card)?.getAttribute("src"),
-  };
-}
-function product(id) {
-  return (
-    products.find((p) => p.id === id) ||
-    favorites.find((p) => p.id === id) ||
-    cart.find((p) => p.id === id)
-  );
-}
-function addToCart(p) {
-  if (!p) return;
-  const existing = cart.find(
-    (x) => x.id === p.id && (x.color || "Grey") === (p.color || "Grey"),
-  );
-  if (existing) existing.quantity++;
-  else cart.push({ ...p, quantity: 1 });
-  persist();
-  toast(p.title + " added to bag");
-}
-document.addEventListener("click", (e) => {
-  const b = e.target.closest(
-    "[data-action],[data-add],[data-remove],[data-quantity]",
-  );
-  if (!b) return;
-  if (b.dataset.add) {
-    const selected = panel.dataset.activeProduct
-      ? JSON.parse(panel.dataset.activeProduct)
-      : null;
-    addToCart(
-      selected?.id === b.dataset.add ? selected : product(b.dataset.add),
-    );
-    return;
-  }
-  if (b.dataset.remove) {
-    if (b.dataset.kind === "cart")
-      cart = cart.filter(
-        (x) => x.id + ":" + (x.color || "Grey") !== b.dataset.remove,
-      );
-    else favorites = favorites.filter((x) => x.id !== b.dataset.remove);
-    persist();
-    collection(b.dataset.kind);
-    return;
-  }
-  if (b.dataset.quantity) {
-    const p = cart.find(
-      (x) => x.id + ":" + (x.color || "Grey") === b.dataset.quantity,
-    );
-    if (p) p.quantity += Number(b.dataset.delta);
-    cart = cart.filter((x) => x.quantity > 0);
-    persist();
-    collection("cart");
-    return;
-  }
-  const action = b.dataset.action;
-  if (action === "close") panel.close();
-  if (action === "menu") {
-    const nav = $(".main-nav");
-    nav.classList.toggle("open");
-    b.setAttribute("aria-expanded", String(nav.classList.contains("open")));
-  }
-  if (action === "product") {
-    viewProduct(fromCard(b.closest("[data-product]")));
-  }
-  if (action === "favorite") {
-    e.stopPropagation();
-    const p = fromCard(b.closest("[data-product]"));
-    const saved = favorites.some((x) => x.id === p.id);
-    favorites = saved
-      ? favorites.filter((x) => x.id !== p.id)
-      : [...favorites, p];
-    persist();
-    toast(saved ? "Removed from favorites" : p.title + " saved to favorites");
-  }
-  if (action === "favorites" || action === "cart") collection(action);
-  if (action === "account") showAccount();
-  if (action === "film") showGallery();
-});
-document.addEventListener("keydown", (e) => {
-  if (
-    (e.key === "Enter" || e.key === " ") &&
-    e.target.matches("[role=button][data-action]")
-  ) {
-    e.preventDefault();
-    e.target.click();
-  }
-});
-function linkify(el, href) {
-  if (!el) return;
-  const a = document.createElement("a");
-  for (const attr of el.attributes) a.setAttribute(attr.name, attr.value);
-  a.href = href;
-  a.innerHTML = el.innerHTML;
-  el.replaceWith(a);
-  return a;
-}
-linkify(node("1:140"), "shop.html");
-$$('[data-section="Categories"] [data-name="Card"]').forEach((c) => {
-  const title = $('[data-name="Text"] p', c)?.textContent.trim();
-  linkify(c, "shop.html?category=" + encodeURIComponent(title || ""));
-});
-$$('[data-section="Gallery"] [data-name="Img+label"]').forEach((c) => {
-  const title = $('[data-name="Label"]', c)?.textContent.trim();
-  linkify(c, "shop.html?room=" + encodeURIComponent(title || ""));
-});
-$$('[data-node-id="1:573"]>[data-name="Icon+ text"]').forEach((c) => {
-  const title = $('[data-name="Text"] p', c)?.textContent.trim();
-  linkify(c, "shop.html?category=" + encodeURIComponent(title || ""));
-});
-const readMore = node("1:1210");
-if (readMore) {
-  readMore.tabIndex = 0;
-  readMore.role = "button";
-  readMore.addEventListener("click", () =>
-    showPanel(
-      "Our approach",
-      '<p>Furniture designed around comfort, everyday living and timeless shapes.</p><p class="dialog-note">' +
-        safe(node("1:1209").textContent) +
-        "</p>",
-    ),
-  );
-}
-$$('[data-section="Info block 4"] [data-name="Button"]').forEach((b) => {
-  if (b.tagName !== "A" && b.textContent.trim() === "Shop now")
-    linkify(b, "shop.html");
-});
-$$('[data-section="Hero"] [data-name="Card"]').forEach((c) => {
-  c.tabIndex = 0;
-  c.role = "button";
-  c.setAttribute("aria-label", "Explore furniture");
-  c.addEventListener("click", () => (location.href = "shop.html"));
-});
-function enhanceCatalog() {
-  const area = node("1:622");
-  if (!area) return;
-  const results = node("1:853"),
-    grid = node("1:861"),
-    toolbar = node("1:854"),
-    filters = node("1:623");
-  results.classList.add("catalog-results");
-  toolbar.classList.add("catalog-toolbar");
-  grid.classList.add("catalog-grid");
-  const cards = $$(".product-card", grid);
-  cards.forEach((card) => {
-    const p = products.find((p) => p.id === card.dataset.product);
-    if (p)
-      Object.assign(card.dataset, {
-        category: p.category,
-        material: p.material,
-        color: p.colors?.[0] || "Grey",
-        room: p.room,
-      });
-  });
-  const sortOld = node("1:856");
-  const select = document.createElement("select");
-  select.className = "catalog-sort";
-  select.setAttribute("aria-label", "Sort products");
-  select.innerHTML =
-    '<option value="latest">Sort by latest</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="name">Name: A–Z</option>';
-  sortOld.replaceWith(select);
-  const count = node("1:855");
-  count.setAttribute("role", "status");
-  const filterToggle = document.createElement("button");
-  filterToggle.className = "filter-toggle";
-  filterToggle.textContent = "Filters";
-  filterToggle.setAttribute("aria-expanded", "false");
-  filterToggle.setAttribute("aria-controls", "catalog-filters");
-  filters.id = "catalog-filters";
-  area.prepend(filterToggle);
-  filterToggle.addEventListener("click", () => {
-    filters.classList.toggle("open");
-    filterToggle.setAttribute(
-      "aria-expanded",
-      String(filters.classList.contains("open")),
-    );
-  });
-  const priceLine = node("1:626");
-  const price = document.createElement("input");
-  price.className = "filter-price";
-  price.type = "range";
-  price.min = 0;
-  price.max = Math.max(...cards.map((c) => Number(c.dataset.price)));
-  price.step = 1;
-  price.value = price.max;
-  price.setAttribute("aria-label", "Maximum price");
-  priceLine.replaceWith(price);
-  const priceLabel = node("1:630");
-  priceLabel.textContent = "Price: $0 – $9999";
-  const reset = document.createElement("button");
-  reset.className = "filter-reset";
-  reset.textContent = "Reset filters";
-  filters.append(reset);
-  const empty = document.createElement("p");
-  empty.className = "result-empty";
-  empty.textContent =
-    "No products match your filters. Try another category or reset the filters.";
-  empty.hidden = true;
-  results.append(empty);
-  const params = new URLSearchParams(location.search),
-    q = (params.get("q") || "").trim().toLowerCase(),
-    room = params.get("room") || "";
-  let category = params.get("category") || "";
-  const search = $("input[name=q]");
-  if (search) search.value = params.get("q") || "";
-  const headerCategory = $(".search-form select");
-  headerCategory.value = category;
-  if (category)
-    $$("input[name=categories]", filters)
-      .filter((c) => c.value === category)
-      .forEach((c) => (c.checked = true));
-  const brandLogos = $$('[data-name="Brands"]>div', filters);
-  brandLogos.forEach((b, i) => {
-    b.role = "button";
-    b.tabIndex = 0;
-    b.setAttribute("aria-label", "Filter by brand " + (i + 1));
-    b.setAttribute("aria-pressed", "false");
-    b.dataset.brand = String(i);
-    b.style.cursor = "pointer";
-    b.addEventListener("click", () => {
-      b.setAttribute(
-        "aria-pressed",
-        String(b.getAttribute("aria-pressed") !== "true"),
-      );
-      currentPage = 1;
-      apply();
-    });
-  });
-  let cleared = false,
-    currentPage = 1;
-  const pageSize = 6;
-  const paging = node("1:990");
-  paging.className = "pagination";
-  paging.setAttribute("aria-label", "Catalog pages");
-  paging.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-page]");
-    if (!b || b.disabled) return;
-    currentPage = Number(b.dataset.page);
-    apply();
-    toolbar.scrollIntoView({ block: "start" });
-  });
-  const categoryGroup = $("input[name=categories]", filters)?.parentElement
-    .parentElement.parentElement;
-  ["Tables", "Armchairs"].forEach((value) => {
-    if (categoryGroup && !$(`input[value="${value}"]`, categoryGroup)) {
-      const label = document.createElement("label");
-      label.className = "extra-category";
-      label.innerHTML = `<input type="checkbox" class="filter-checkbox" name="categories" value="${value}">${value}`;
-      categoryGroup.append(label);
-      if (category === value) $("input", label).checked = true;
-    }
-  });
-  function apply() {
-    const categories = $$("input[name=categories]:checked", filters).map(
-        (c) => c.value,
-      ),
-      colors = $$("input[name=color]:checked", filters).map((c) => c.value),
-      materials = $$(
-        "input[name=masterial]:checked,input[name=material]:checked",
-        filters,
-      ).map((c) => c.value),
-      brands = brandLogos
-        .filter((b) => b.getAttribute("aria-pressed") === "true")
-        .map((b) => Number(b.dataset.brand));
-    let filtered = cards.filter((c, i) => {
-      const matchCategory = categories.length
-        ? categories.some((x) =>
-            x === "Sale"
-              ? product(c.dataset.product)?.sale
-              : x === c.dataset.category,
-          )
-        : !category ||
-          cleared ||
-          (category === "Sale" && product(c.dataset.product)?.sale) ||
-          c.dataset.category === category;
-      return (
-        (cleared || !q || c.dataset.title.toLowerCase().includes(q)) &&
-        matchCategory &&
-        (cleared || !room || c.dataset.room === room) &&
-        Number(c.dataset.price) <= Number(price.value) &&
-        (!colors.length ||
-          colors.some((color) =>
-            product(c.dataset.product)?.colors?.includes(color),
-          )) &&
-        (!materials.length || materials.includes(c.dataset.material)) &&
-        (!brands.length || brands.includes(product(c.dataset.product)?.brand))
-      );
-    });
-    if (select.value === "price-asc")
-      filtered.sort((a, b) => a.dataset.price - b.dataset.price);
-    if (select.value === "price-desc")
-      filtered.sort((a, b) => b.dataset.price - a.dataset.price);
-    if (select.value === "name")
-      filtered.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
-    const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
-    currentPage = Math.min(currentPage, pages);
-    const start = (currentPage - 1) * pageSize;
-    cards.forEach((c) => (c.hidden = true));
-    filtered.slice(start, start + pageSize).forEach((c) => {
-      c.hidden = false;
-      grid.append(c);
-    });
-    count.textContent = filtered.length
-      ? `Showing ${start + 1}–${Math.min(start + pageSize, filtered.length)} of ${filtered.length} results`
-      : "Showing 0 results";
-    empty.hidden = filtered.length > 0;
-    priceLabel.textContent = "Price: $0 – " + money(Number(price.value));
-    paging.innerHTML = `<button data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>Previous</button><div class="pages">${Array.from({ length: pages }, (_, i) => `<button data-page="${i + 1}" aria-label="Page ${i + 1}" ${currentPage === i + 1 ? 'aria-current="page"' : ""}>${i + 1}</button>`).join("")}</div><button data-page="${currentPage + 1}" ${currentPage === pages ? "disabled" : ""}>Next ›</button>`;
-  }
-  reset.addEventListener("click", () => {
-    cleared = true;
-    currentPage = 1;
-    $$("input[type=checkbox]", filters).forEach((c) => (c.checked = false));
-    brandLogos.forEach((b) => b.setAttribute("aria-pressed", "false"));
-    price.value = price.max;
-    select.value = "latest";
-    if (search) search.value = "";
-    headerCategory.value = "";
-    history.replaceState(null, "", location.pathname);
-    apply();
-  });
-  filters.addEventListener("change", (e) => {
-    if (e.target.name === "categories") category = "";
-    currentPage = 1;
-    apply();
-  });
-  price.addEventListener("input", () => {
-    currentPage = 1;
-    apply();
-  });
-  select.addEventListener("change", () => {
-    currentPage = 1;
-    apply();
-  });
-
-  apply();
-}
-updateCounters();
+function setupCatalog(){const grid=$('#catalog-grid');if(!grid)return;const cards=$$('.product-card',grid),params=new URLSearchParams(location.search);let category=params.get('category')||'Все',page=1;const aliases={Chairs:'Стулья',Tables:'Столы',Armchairs:'Кресла',Sofas:'Диваны',Beds:'Кровати',Cabinets:'Хранение',Decor:'Свет'};category=aliases[category]||category;const known=['Все',...new Set(PRODUCTS.map(p=>p.category))];if(!known.includes(category))category='Все';$('#search').value=(params.get('q')||'').slice(0,100);const rooms={'Living room':'Гостиная',Bedroom:'Спальня',Kitchen:'Кухня',Hallway:'Прихожая'};$('#filter-room').value=rooms[params.get('room')]||params.get('room')||'';const norm=s=>s.toLocaleLowerCase('ru-RU').replace(/ё/g,'е').trim();
+ function apply(updateURL=true){const q=norm($('#search').value),room=$('#filter-room').value,material=$('#filter-material').value,limit=Number($('#filter-price').value);$('#price-label').textContent=money(limit);let result=PRODUCTS.filter(p=>(category==='Все'||p.category===category)&&(!room||p.room===room)&&(!material||p.material===material)&&p.price<=limit&&(!q||norm([p.title,p.category,p.material,p.room,p.description].join(' ')).includes(q)));const sort=$('#sort').value;if(sort==='price-asc')result.sort((a,b)=>a.price-b.price);if(sort==='price-desc')result.sort((a,b)=>b.price-a.price);if(sort==='name')result.sort((a,b)=>a.title.localeCompare(b.title,'ru'));const size=6,pages=Math.max(1,Math.ceil(result.length/size));page=Math.min(page,pages);const shown=result.slice((page-1)*size,page*size);cards.forEach(c=>c.hidden=true);shown.forEach(p=>{const c=cards.find(c=>c.dataset.product===p.id);c.hidden=false;grid.append(c)});$('#result-count').textContent=result.length?`${(page-1)*size+1}–${Math.min(page*size,result.length)} из ${result.length} товаров`:'Найдено 0 товаров';$('#empty-results').hidden=!!result.length;$('#pagination').innerHTML=result.length>size?`<button data-page="${page-1}" ${page===1?'disabled':''} aria-label="Предыдущая страница">←</button>${Array.from({length:pages},(_,i)=>`<button data-page="${i+1}" aria-label="Страница ${i+1}" ${i+1===page?'aria-current="page"':''}>${i+1}</button>`).join('')}<button data-page="${page+1}" ${page===pages?'disabled':''} aria-label="Следующая страница">→</button>`:'';$$('[data-category]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.category===category)));if(updateURL){const u=new URL(location.href);u.search='';if(category!=='Все')u.searchParams.set('category',category);if(q)u.searchParams.set('q',$('#search').value.trim());if(room)u.searchParams.set('room',room);history.replaceState(null,'',u.pathname+u.search)}}
+ $$('[data-category]').forEach(b=>b.addEventListener('click',()=>{category=b.dataset.category;page=1;apply()}));$('#search').addEventListener('input',()=>{page=1;apply()});$('#catalog-search').addEventListener('submit',e=>{e.preventDefault();page=1;apply()});['filter-room','filter-material','sort'].forEach(id=>$('#'+id).addEventListener('change',()=>{page=1;apply()}));$('#filter-price').addEventListener('input',()=>{page=1;apply()});$$('[data-action="reset-filters"]').forEach(b=>b.addEventListener('click',()=>{category='Все';page=1;$('#search').value='';$('#filter-room').value='';$('#filter-material').value='';$('#filter-price').value='70000';$('#sort').value='recommended';apply()}));$('#pagination').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(!b||b.disabled)return;page=Number(b.dataset.page);apply();$('.catalog-toolbar').scrollIntoView({block:'start',behavior:'instant'})});apply(false)}
+window.addEventListener('storage',e=>{if(!e.key?.startsWith(KEY))return;if(e.key===KEY+'cart')cart=cleanCart(read('cart',[]));if(e.key===KEY+'favorites'){const next=read('favorites',[]);favorites=Array.isArray(next)?[...new Set(next.filter(id=>byId(id)))]:[]}counters();if(panel.open&&['Ваша корзина','Избранное'].includes($('#panel-title').textContent))collection($('#panel-title').textContent==='Ваша корзина'?'cart':'favorites')});
+window.FurnitureStore=Object.freeze({products:PRODUCTS.map(p=>Object.freeze({...p,colors:Object.freeze([...p.colors])})),addItems,viewProduct,notify,money,escapeHTML});
+counters();setupCatalog();document.body.dataset.storeReady='true';

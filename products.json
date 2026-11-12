@@ -1,223 +1,276 @@
 [
   {
     "id": "modern-armchair",
-    "title": "Modern Armchair",
-    "price": 250,
-    "image": "assets/photos/reading-corner.webp",
-    "category": "Armchairs",
-    "material": "Leather",
+    "title": "Кресло «Линия»",
+    "price": 24900,
+    "image": "assets/photos/oak-armchair.webp",
+    "category": "Кресла",
+    "material": "Ткань",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Бежевый",
+      "Серый",
+      "Зелёный"
     ],
-    "room": "Living room",
-    "brand": 0,
-    "sale": false,
-    "inCatalog": true
+    "room": "Гостиная",
+    "description": "Личное место для книги, музыки и спокойного вечера. Мягкие формы легко впишутся в современный интерьер.",
+    "inCatalog": true,
+    "featured": true,
+    "isNew": false
   },
   {
     "id": "egg-chair",
-    "title": "Egg chair",
-    "price": 280,
+    "title": "Кресло «Кокон»",
+    "price": 28900,
     "image": "assets/photos/egg-chair.webp",
-    "category": "Chairs",
-    "material": "Leather",
+    "category": "Кресла",
+    "material": "Ткань",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Серый",
+      "Бежевый"
     ],
-    "room": "Living room",
-    "brand": 1,
-    "sale": false,
-    "inCatalog": true
+    "room": "Гостиная",
+    "description": "Личное место для книги, музыки и спокойного вечера. Мягкие формы легко впишутся в современный интерьер.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "chaise-lounge",
-    "title": "Lounge Chair",
-    "price": 450,
+    "title": "Шезлонг «Пауза»",
+    "price": 45900,
     "image": "assets/photos/lounge-chair.webp",
-    "category": "Chairs",
-    "material": "Leather",
+    "category": "Кресла",
+    "material": "Ткань",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Бежевый",
+      "Серый"
     ],
-    "room": "Living room",
-    "brand": 2,
-    "sale": false,
-    "inCatalog": true
+    "room": "Гостиная",
+    "description": "Личное место для книги, музыки и спокойного вечера. Мягкие формы легко впишутся в современный интерьер.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "modern-chair",
-    "title": "Modern Chair",
-    "price": 250,
+    "title": "Стул «Форма»",
+    "price": 12900,
     "image": "assets/photos/modern-chair.webp",
-    "category": "Chairs",
-    "material": "Leather",
+    "category": "Стулья",
+    "material": "Дерево",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Коричневый",
+      "Бежевый"
     ],
-    "room": "Living room",
-    "brand": 3,
-    "sale": false,
-    "inCatalog": false
+    "room": "Кухня",
+    "description": "Лаконичный силуэт для обеденной зоны или рабочего уголка. Сочетайте с деревом и спокойными оттенками.",
+    "inCatalog": true,
+    "featured": true,
+    "isNew": false
   },
   {
     "id": "folding-table",
-    "title": "Console Table",
-    "price": 160,
+    "title": "Консоль «Ритм»",
+    "price": 16900,
     "image": "assets/photos/console-table.webp",
-    "category": "Tables",
-    "material": "Wood",
+    "category": "Столы",
+    "material": "Дерево",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Коричневый",
+      "Белый"
     ],
-    "room": "Living room",
-    "brand": 4,
-    "sale": true,
-    "inCatalog": true
+    "room": "Прихожая",
+    "description": "Продуманная основа для повседневных вещей. Тёплая фактура добавит комнате уюта.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "classic-armchair",
-    "title": "Classic Armchair",
-    "price": 180,
+    "title": "Кресло «Тихо»",
+    "price": 18900,
     "image": "assets/photos/classic-armchair.webp",
-    "category": "Armchairs",
-    "material": "Leather",
+    "category": "Кресла",
+    "material": "Ткань",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Бежевый",
+      "Зелёный"
     ],
-    "room": "Living room",
-    "brand": 5,
-    "sale": false,
-    "inCatalog": true
+    "room": "Гостиная",
+    "description": "Личное место для книги, музыки и спокойного вечера. Мягкие формы легко впишутся в современный интерьер.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "papasan-chair",
-    "title": "Rattan Chair",
-    "price": 250,
+    "title": "Стул «Ротанг»",
+    "price": 15900,
     "image": "assets/photos/rattan-chair.webp",
-    "category": "Chairs",
-    "material": "Leather",
+    "category": "Стулья",
+    "material": "Ротанг",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Коричневый"
     ],
-    "room": "Living room",
-    "brand": 0,
-    "sale": false,
-    "inCatalog": true
+    "room": "Гостиная",
+    "description": "Лаконичный силуэт для обеденной зоны или рабочего уголка. Сочетайте с деревом и спокойными оттенками.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "coffee-table",
-    "title": "Coffee Table",
-    "price": 150,
+    "title": "Столик «Круг»",
+    "price": 14900,
     "image": "assets/photos/coffee-table.webp",
-    "category": "Tables",
-    "material": "Wood",
+    "category": "Столы",
+    "material": "Дерево",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Коричневый",
+      "Белый"
     ],
-    "room": "Living room",
-    "brand": 1,
-    "sale": false,
-    "inCatalog": true
+    "room": "Гостиная",
+    "description": "Продуманная основа для повседневных вещей. Тёплая фактура добавит комнате уюта.",
+    "inCatalog": true,
+    "featured": true,
+    "isNew": false
   },
   {
     "id": "classic-chair",
-    "title": "Classic Chair",
-    "price": 99,
+    "title": "Стул «Мягкий»",
+    "price": 9900,
     "image": "assets/photos/upholstered-chair.webp",
-    "category": "Chairs",
-    "material": "Leather",
+    "category": "Стулья",
+    "material": "Ткань",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Бежевый",
+      "Серый"
     ],
-    "room": "Hallway",
-    "brand": 2,
-    "sale": false,
-    "inCatalog": true
+    "room": "Кухня",
+    "description": "Лаконичный силуэт для обеденной зоны или рабочего уголка. Сочетайте с деревом и спокойными оттенками.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "bar-stool",
-    "title": "Bar Stool",
-    "price": 250,
+    "title": "Табурет «Дуб»",
+    "price": 7900,
     "image": "assets/photos/oak-stool.webp",
-    "category": "Chairs",
-    "material": "Metal",
+    "category": "Стулья",
+    "material": "Дерево",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Коричневый",
+      "Белый"
     ],
-    "room": "Kitchen",
-    "brand": 3,
-    "sale": false,
-    "inCatalog": true
+    "room": "Кухня",
+    "description": "Лаконичный силуэт для обеденной зоны или рабочего уголка. Сочетайте с деревом и спокойными оттенками.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "nightstand",
-    "title": "Nightstand",
-    "price": 80,
+    "title": "Тумба «Порядок»",
+    "price": 8900,
     "image": "assets/photos/nightstand.webp",
-    "category": "Cabinets",
-    "material": "Wood",
+    "category": "Хранение",
+    "material": "Дерево",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Коричневый",
+      "Белый"
     ],
-    "room": "Bedroom",
-    "brand": 4,
-    "sale": false,
-    "inCatalog": true
+    "room": "Спальня",
+    "description": "Помогает освободить пространство и сохранить нужное под рукой. Спокойный дизайн сочетается с остальной коллекцией.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "white-table",
-    "title": "White Table",
-    "price": 250,
+    "title": "Стол «Свет»",
+    "price": 25900,
     "image": "assets/photos/white-table.webp",
-    "category": "Tables",
-    "material": "Wood",
+    "category": "Столы",
+    "material": "Дерево",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Белый",
+      "Коричневый"
     ],
-    "room": "Kitchen",
-    "brand": 5,
-    "sale": false,
-    "inCatalog": true
+    "room": "Кухня",
+    "description": "Продуманная основа для повседневных вещей. Тёплая фактура добавит комнате уюта.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
   },
   {
     "id": "modern-bed",
-    "title": "Modern Bed",
-    "price": 680,
+    "title": "Кровать «Утро»",
+    "price": 68900,
     "image": "assets/photos/bed.webp",
-    "category": "Beds",
-    "material": "Wood",
+    "category": "Кровати",
+    "material": "Дерево",
     "colors": [
-      "Grey",
-      "Brown",
-      "Blue"
+      "Бежевый",
+      "Коричневый"
     ],
-    "room": "Bedroom",
-    "brand": 0,
-    "sale": false,
-    "inCatalog": true
+    "room": "Спальня",
+    "description": "Центр спокойной спальни. Дополните светлым текстилем, тумбой и мягким вечерним освещением.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": false
+  },
+  {
+    "id": "sofa",
+    "title": "Диван «Мох»",
+    "price": 64900,
+    "image": "assets/photos/sofa.webp",
+    "category": "Диваны",
+    "material": "Ткань",
+    "colors": [
+      "Зелёный",
+      "Бежевый",
+      "Серый",
+      "Терракота"
+    ],
+    "room": "Гостиная",
+    "description": "Мягкий акцент гостиной: место для разговоров, отдыха и любимых фильмов.",
+    "inCatalog": true,
+    "featured": true,
+    "isNew": true
+  },
+  {
+    "id": "floor-lamp",
+    "title": "Торшер «Тёплый свет»",
+    "price": 11900,
+    "image": "assets/photos/reading-corner.webp",
+    "category": "Свет",
+    "material": "Металл",
+    "colors": [
+      "Чёрный",
+      "Белый"
+    ],
+    "room": "Гостиная",
+    "description": "Мягкое локальное освещение для уютного уголка. Дополняет кресло, диван и вечернюю атмосферу.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": true
+  },
+  {
+    "id": "sideboard",
+    "title": "Комод «Горизонт»",
+    "price": 32900,
+    "image": "assets/photos/console-table.webp",
+    "category": "Хранение",
+    "material": "Дерево",
+    "colors": [
+      "Коричневый",
+      "Белый"
+    ],
+    "room": "Прихожая",
+    "description": "Помогает освободить пространство и сохранить нужное под рукой. Спокойный дизайн сочетается с остальной коллекцией.",
+    "inCatalog": true,
+    "featured": false,
+    "isNew": true
   }
 ]
