@@ -46,7 +46,7 @@ for js in (ROOT/'assets/vendor/three').glob('*.js'):
   if imp.startswith('.'):assert(js.parent/imp).is_file(),(js,imp)
 raw=(ROOT/'assets/models/room.glb').read_bytes();magic,version,length=struct.unpack_from('<4sII',raw);assert magic==b'glTF' and version==2 and length==len(raw)
 size,kind=struct.unpack_from('<I4s',raw,12);gltf=json.loads(raw[20:20+size]);ids={n.get('extras',{}).get('productId') for n in gltf['nodes']}
-assert {'sofa','coffee-table','modern-armchair','nightstand','floor-lamp'}<=ids
+assert {'sofa','coffee-table','modern-armchair','nightstand','floor-lamp','classic-armchair','sideboard'}<=ids
 assert len(raw)<4_000_000
 assert all('uri' not in b for b in gltf['buffers']), 'GLB must be self-contained'
-print('PASS 16 catalog products, local Three.js imports, embedded Blender model and 5 selectable groups')
+print('PASS 16 catalog products, local Three.js imports, embedded Blender model and 7 selectable groups')

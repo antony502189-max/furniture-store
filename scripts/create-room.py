@@ -66,7 +66,9 @@ def rod(name,a,b,r,material):
 def group(pid):
     global current
     current=bpy.data.objects.new('product-'+pid,None);bpy.context.collection.objects.link(current)
-    current['productId']=pid; return current
+    current['productId']=pid
+    current.location=(0,0,0); current.rotation_euler=(0,0,0); current.scale=(1,1,1)
+    return current
 
 def vase(name,x,y,z,r,h,material):
     # Lathed profile creates a real hollow-neck silhouette rather than a box.
@@ -149,7 +151,7 @@ for x in [-.57,.37]:
     rod('Table angled leg',(x,-.55,.08),(x*.75,-.3,.45),.035,black)
     rod('Table angled leg',(x,-.05,.08),(x*.75,-.3,.45),.035,black)
 cube('Table lower crossbar',(-.1,-.30,.22),(.94,.045,.045),black,.008)
-current=None
+# Tabletop accessories are children of the movable coffee-table product.
 for i in range(2):
     cube('Coffee table art book',(.09,-.32,.54+i*.044),(.34,.25,.038),bookmat[i],.008)
     cube('Visible book pages',(.09,-.326,.54+i*.044),(.32,.243,.027),paper,.003)
@@ -173,6 +175,39 @@ from mathutils import Matrix
 pivot=Vector((-1.78,-.12,0)); rot=Matrix.Rotation(math.radians(-13),4,'Z')
 for ob in chair.children:ob.matrix_world=Matrix.Translation(pivot)@rot@Matrix.Translation(-pivot)@ob.matrix_world
 current=None
+# A genuine alternative: a rounded upholstered tub chair, not a recolor.
+# Both chair variants occupy the same anchor; the browser selects one root.
+group('classic-armchair')
+classic=current
+boucle=mat('Sand boucle upholstery',(.66,.55,.43))
+for x in [-2.08,-1.48]:
+    for y in [-.41,.17]:cylinder('Classic chair tapered foot',(x,y,.13),.035,.20,wood)
+cube('Classic chair upholstered foundation',(-1.78,-.12,.38),(1.03,.98,.35),boucle,.16)
+cube('Classic chair deep seat cushion',(-1.78,-.21,.56),(.75,.73,.20),linen,.095)
+# Extruded semicircular back with a low-to-high curved top and genuine thickness.
+verts=[]; faces=[]; segments=40
+for radius_x,radius_y in [(.54,.50),(.40,.36)]:
+    for top in [False,True]:
+        for i in range(segments+1):
+            a=math.pi*i/segments
+            z=(.73+.40*math.sin(a)) if top else .40
+            verts.append((-1.78+radius_x*math.cos(a),-.12+radius_y*math.sin(a),z))
+stride=segments+1
+for i in range(segments):
+    for a,b in [(0,1),(1,3),(3,2),(2,0)]:
+        faces.append((a*stride+i,a*stride+i+1,b*stride+i+1,b*stride+i))
+faces.extend([(0,stride,3*stride,2*stride),(segments,2*stride-1,4*stride-1,3*stride-1)])
+mesh=bpy.data.meshes.new('Sculpted tub chair back');mesh.from_pydata(verts,[],faces);mesh.update()
+o=bpy.data.objects.new('Classic rounded upholstered shell',mesh);bpy.context.collection.objects.link(o);attach(o,boucle)
+bevel=o.modifiers.new('Soft continuous upholstered edge','BEVEL');bevel.width=.035;bevel.segments=3
+bpy.context.view_layer.objects.active=o;bpy.ops.object.modifier_apply(modifier=bevel.name)
+for face in o.data.polygons:face.use_smooth=True
+for x in [-2.24,-1.32]:
+    cube('Classic chair padded arm',(x,-.22,.66),(.18,.67,.26),boucle,.085)
+pillow=cube('Classic chair loose pillow',(-1.78,.13,.80),(.43,.17,.43),green2,.085);pillow.rotation_euler.x=.16
+pivot=Vector((-1.78,-.12,0));rot=Matrix.Rotation(math.radians(-13),4,'Z')
+for ob in classic.children:ob.matrix_world=Matrix.Translation(pivot)@rot@Matrix.Translation(-pivot)@ob.matrix_world
+current=None
 # Sideboard against the back wall.
 group('nightstand')
 for x in [1.64,2.57]:
@@ -183,10 +218,29 @@ for x in [1.81,2.39]:
     for i in range(9):cube('Door fluted oak detail',(x-.245+i*.061,1.61,.53),(.018,.024,.53),wood,.007)
     cylinder('Brass pull',(x,1.59,.55),.023,.03,brass,16).rotation_euler.x=math.pi/2
 cube('Sideboard top',(2.1,1.96,.88),(1.24,.66,.055),woodLight,.016)
-current=None
+# Display accessories move and hide together with the nightstand.
 vase('Terracotta display vase',2.37,1.98,.91,.11,.27,terracotta)
 vase('Ivory display vase',2.08,1.98,.91,.08,.19,cream)
 for i in range(3):cube('Sideboard books',(1.73,1.94,.94+i*.045),(.25,.30,.04),bookmat[i],.005)
+# A wider, lower sideboard with three doors and its own display accessories.
+group('sideboard')
+for x in [1.40,2.80]:
+    for y in [1.74,2.18]:
+        rod('Wide sideboard angled foot',(x,y,.065),(x+(.035 if x<2.1 else -.035),y,.25),.030,black)
+cube('Wide sideboard oak case',(2.1,1.96,.49),(1.60,.60,.56),wood,.045)
+cube('Wide sideboard rounded top',(2.1,1.96,.80),(1.64,.65,.07),woodLight,.032)
+for x in [1.57,2.10,2.63]:
+    cube('Wide sideboard inset door',(x,1.648,.49),(.50,.026,.49),woodLight,.020)
+    cube('Wide sideboard woven panel',(x,1.629,.49),(.40,.015,.38),linen,.012)
+    for k in range(10):
+        cube('Woven door vertical reed',(x-.183+k*.0407,1.617,.49),(.009,.012,.37),wood,.003)
+    for k in range(7):
+        cube('Woven door horizontal reed',(x,1.608,.322+k*.056),(.39,.009,.007),woodLight,.002)
+    pull=cylinder('Wide sideboard brass handle',(x+.20,1.59,.55),.018,.035,brass,16);pull.rotation_euler.x=math.pi/2
+vase('Wide sideboard tall vase',2.66,2.03,.835,.105,.28,terracotta)
+vase('Wide sideboard small vase',2.40,2.03,.835,.075,.18,cream)
+for i in range(3):cube('Wide sideboard stacked book',(1.58,1.96,.86+i*.043),(.31,.25,.035),bookmat[i],.005)
+current=None
 # Floor lamp: warm brass arc and cream fabric shade.
 group('floor-lamp')
 cylinder('Lamp heavy base',(-2.05,1.60,.09),.21,.08,black)
@@ -226,10 +280,31 @@ for (root,material),objects in batches.items():
     bpy.context.view_layer.objects.active=objects[0]
     bpy.ops.object.join()
     bpy.context.object.name=(root or 'room')+' / '+material
+# Bake all mesh transforms as well. Besides identity product roots, this keeps
+# child bounds aligned to room axes for reliable browser Box3 hit/collision bounds.
+bpy.ops.object.select_all(action='DESELECT')
+meshes=[ob for ob in bpy.context.scene.objects if ob.type=='MESH']
+for ob in meshes: ob.select_set(True)
+bpy.context.view_layer.objects.active=meshes[0]
+bpy.ops.object.transform_apply(location=True,rotation=True,scale=True)
 # Export no camera or lights; the browser owns illumination and navigation.
 bpy.ops.object.select_all(action='SELECT')
 bpy.ops.export_scene.gltf(filepath=output,export_format='GLB',export_extras=True,export_cameras=False,export_lights=False,export_yup=True,export_apply=True)
 print('ROOM_EXPORTED',output,os.path.getsize(output))
+# Only default variants appear in the optional preview. The GLB above contains
+# all seven roots with identity transforms and all meshes; browser owns visibility.
+for pid in ['classic-armchair','sideboard']:
+    root=bpy.data.objects['product-'+pid]
+    root.hide_render=True
+    for child in root.children_recursive:
+        child.hide_render=True
+        child.hide_set(True)
+# Optional third argument saves an editable source file at an explicit location.
+if len(args)>2:
+    source=os.path.abspath(args[2]);os.makedirs(os.path.dirname(source),exist_ok=True)
+    bpy.context.preferences.filepaths.save_version=0
+    bpy.ops.wm.save_as_mainfile(filepath=source)
+
 # Optional source scene and preview, outside of the shipped asset directory.
 if len(args)>1:
     preview=os.path.abspath(args[1]);os.makedirs(os.path.dirname(preview),exist_ok=True)
@@ -246,4 +321,7 @@ if len(args)>1:
     cam.rotation_euler=(Vector((0,0,1))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=8.4;scene.camera=cam
     scene.render.resolution_x=1100;scene.render.resolution_y=900;scene.render.resolution_percentage=100
     scene.render.image_settings.file_format='PNG';scene.render.filepath=preview
-    scene.view_settings.view_transform='AgX';bpy.ops.wm.save_as_mainfile(filepath=os.path.splitext(preview)[0]+'.blend');bpy.ops.render.render(write_still=True)
+    scene.view_settings.view_transform='AgX'
+    bpy.context.preferences.filepaths.save_version=0
+    source=os.path.abspath(args[2]) if len(args)>2 else os.path.splitext(preview)[0]+'.blend'
+    bpy.ops.wm.save_as_mainfile(filepath=source);bpy.ops.render.render(write_still=True)
