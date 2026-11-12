@@ -18,6 +18,7 @@ jobs:
       - run: node --check store.js && node --check room.js && node --test tests/*.test.cjs tests/*.test.mjs
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test --project=webkit --grep "Russian pages and no overflow at (320|360)px"
       - run: npx playwright test
       - uses: actions/upload-artifact@v4
         if: always()
