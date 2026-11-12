@@ -9,11 +9,11 @@ export const layouts = {
   conversation: {sofa:[-.35,-1.47,0], chair:[1.6,.6,-1.0], table:[0,.15,0], storage:[2.1,-1.96,0], lamp:[-2.35,-1.55,0]},
   open: {sofa:[-1.95,-.45,Math.PI/2], chair:[1.5,1.2,-.5], table:[-.2,-.15,0], storage:[1.55,-1.96,0], lamp:[0,-1.9,0]}
 };
-export const defaults = {layout:'lounge',palette:'sage',floor:'oak',wall:'chalk',chair:'modern-armchair',storage:'nightstand',enabled:slots,night:false,budget:150000,positions:{}};
+export const defaults = {layout:'lounge',palette:'sage',floor:'oak',wall:'chalk',chair:'modern-armchair',storage:'nightstand',enabled:slots,night:false,currency:'BYN',budget:5500,positions:{}};
 export function validate(raw={}) {
   if(!raw || typeof raw!=='object' || Array.isArray(raw)) raw={};
   const pick=(key,allowed)=>allowed.includes(raw[key])?raw[key]:defaults[key];
-  const state={layout:pick('layout',Object.keys(layouts)),palette:pick('palette',['sage','sand','clay']),floor:pick('floor',['oak','walnut','ash']),wall:pick('wall',['chalk','sage','clay']),chair:pick('chair',options.chair),storage:pick('storage',options.storage),enabled:Array.isArray(raw.enabled)?slots.filter(s=>raw.enabled.includes(s)):[...slots],night:raw.night===true,budget:Number.isFinite(raw.budget)?Math.max(60000,Math.min(220000,Math.round(raw.budget/1000)*1000)):defaults.budget,positions:{}};
+  const state={currency:'BYN',layout:pick('layout',Object.keys(layouts)),palette:pick('palette',['sage','sand','clay']),floor:pick('floor',['oak','walnut','ash']),wall:pick('wall',['chalk','sage','clay']),chair:pick('chair',options.chair),storage:pick('storage',options.storage),enabled:Array.isArray(raw.enabled)?slots.filter(s=>raw.enabled.includes(s)):[...slots],night:raw.night===true,budget:Number.isFinite(raw.budget)&&!(raw.currency!=='BYN'&&raw.budget>8000)?Math.max(2000,Math.min(8000,Math.round(raw.budget/50)*50)):defaults.budget,positions:{}};
   for(const slot of slots){const p=raw.positions?.[slot];if(Array.isArray(p)&&p.length===3&&p.every(Number.isFinite))state.positions[slot]=[Math.max(-2.5,Math.min(2.5,p[0])),Math.max(-2,Math.min(2,p[1])),Math.max(-Math.PI*2,Math.min(Math.PI*2,p[2]))]}
   return state;
 }

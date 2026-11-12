@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import {OrbitControls} from './assets/vendor/three/OrbitControls.js';
 import {GLTFLoader} from './assets/vendor/three/GLTFLoader.js';
-import {slots,options,layouts,validate,productId,position,selection,total,encode,decode} from './room-config.mjs';
+import {slots,options,layouts,validate,productId,position,selection,total,encode,decode} from './room-config.mjs?v=byn1';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const store=window.FurnitureStore, viewer=$('#room-viewer'), shell=$('.viewer-shell'), status=$('#room-status');
 const names={sofa:'Диван',chair:'Кресло',table:'Столик',storage:'Хранение',lamp:'Свет'};
@@ -23,7 +23,7 @@ const owner=node=>{while(node){if(node.userData.productId)return node.userData.p
 const slotFor=id=>slots.find(s=>options[s].includes(id));
 function persist(){try{localStorage.setItem('fstore-room-v3',JSON.stringify(state));storageOK=true}catch{storageOK=false}$('#room-save-status').textContent=storageOK?'Интерьер сохранён на этом устройстве.':'Сохраните ссылку на интерьер: память браузера недоступна.';if(location.hash.startsWith('#room='))window.history.replaceState(null,'',location.pathname+location.search+'#room='+encode(state));$('#share-result').hidden=true}
 function change(patch,message){history.push(JSON.stringify(state));if(history.length>30)history.shift();state=validate({...state,...patch});preset=null;sync();persist();if(message)status.textContent=message}
-function updateTotals(){const sum=total(state,store.products), chosen=selection(state,store.products);$('#studio-total').textContent=store.money(sum);$('#room-total').textContent=`${chosen.length} шт. · ${store.money(sum)}`;$('#add-room-set').disabled=!chosen.length;$('#budget-value').textContent=store.money(state.budget);$('#room-budget').value=state.budget;$('#budget-fill').style.width=Math.min(100,sum/state.budget*100)+'%';$('.room-budget').classList.toggle('over-budget',sum>state.budget);$('#budget-status').textContent=sum>state.budget?`Выше бюджета на ${store.money(sum-state.budget)}`:`В бюджете · осталось ${store.money(state.budget-sum)}`}
+function updateTotals(){const sum=total(state,store.products), chosen=selection(state,store.products);$('#studio-total').textContent=store.money(sum);$('#room-total').textContent=`${chosen.length} шт. · ${store.money(sum)}`;$('#add-room-set').disabled=!chosen.length;$('#budget-value').textContent=store.money(state.budget);$('#room-budget').value=state.budget;$('.room-budget').classList.toggle('over-budget',sum>state.budget);$('#budget-status').textContent=sum>state.budget?`Выше бюджета на ${store.money(sum-state.budget)}`:`В бюджете · осталось ${store.money(state.budget-sum)}`}
 function renderProducts(){const focus=document.activeElement?.dataset;const focusSlot=focus?.roomInclude?slotFor(focus.roomInclude):null;
   $('#room-products').innerHTML=slots.map(slot=>{const p=pFor(slot);return `<article class="room-item ${activeSlot===slot?'selected':''}" data-room-item="${p.id}"><span class="eyebrow">${names[slot]}</span><button data-focus-product="${p.id}" aria-label="Рассмотреть в комнате: ${store.escapeHTML(p.title)}"><img src="${p.image}" alt="${store.escapeHTML(p.title)}" width="300" height="350" loading="lazy"><h3>${store.escapeHTML(p.title)}</h3></button><p>${store.money(p.price)}</p>${options[slot].length>1?`<label class="variant-label" for="variant-${slot}">Модель</label><select id="variant-${slot}" data-variant="${slot}">${options[slot].map(id=>{const item=store.products.find(p=>p.id===id);return `<option value="${id}" ${p.id===id?'selected':''}>${store.escapeHTML(item.title)} · ${store.money(item.price)}</option>`}).join('')}</select>`:''}<label><input type="checkbox" data-room-include="${p.id}" ${state.enabled.includes(slot)?'checked':''}>Включить в набор</label></article>`}).join('');
   if(focusSlot)$(`[data-room-include="${productId(state,focusSlot)}"]`)?.focus({preventScroll:true});
@@ -70,7 +70,28 @@ const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
 function selectAt(e){const r=viewer.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(pointer,camera);const visible=[...groups.values()].filter(g=>g.visible);const hit=raycaster.intersectObjects(visible,true)[0];if(hit)chooseProduct(owner(hit.object),false)}
 function wirePointer(){const canvas=renderer.domElement;canvas.addEventListener('pointerdown',e=>{drag={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY};if(mode==='walk'){canvas.setPointerCapture(e.pointerId);viewer.focus()}});canvas.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;if(mode==='walk'){yaw-=(e.clientX-drag.lastX)*.004;pitch=THREE.MathUtils.clamp(pitch-(e.clientY-drag.lastY)*.003,-1.1,1.1);look()}drag.lastX=e.clientX;drag.lastY=e.clientY});canvas.addEventListener('pointerup',e=>{if(drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<7)selectAt(e);drag=null});canvas.addEventListener('pointercancel',()=>drag=null)}
 const projected=new THREE.Vector3();
-function updateLabels(){if(!showPrices)return;const used=[],w=viewer.clientWidth,h=viewer.clientHeight;for(const slot of [...slots].sort((a,b)=>a===activeSlot?-1:b===activeSlot?1:0)){const pin=$(`[data-pin="${slot}"]`),connector=$(`[data-connector="${slot}"]`),box=bounds.get(slot);connector.style.display='none';if(!box){pin.hidden=true;continue}box.getCenter(projected);projected.y=box.max.y+.12;projected.project(camera);let x=(projected.x*.5+.5)*w,y=(-projected.y*.5+.5)*h;pin.hidden=projected.z>1||projected.z< -1||x<20||x>w-20||y<50||y>h-95;if(pin.hidden)continue;const anchorX=x,anchorY=y;y-=22;const pw=pin.offsetWidth,ph=pin.offsetHeight;x=Math.max(pw/2+8,Math.min(w-pw/2-8,x));for(let n=0;n<5&&used.some(r=>Math.abs(r.x-x)<(r.w+pw)/2+5&&Math.abs(r.y-y)<(r.h+ph)/2+5);n++)y+=ph+6;if(y>h-95){pin.hidden=true;continue}used.push({x,y,w:pw,h:ph});connector.style.display='';const line=connector.querySelector('line'),dot=connector.querySelector('circle');line.setAttribute('x1',anchorX);line.setAttribute('y1',anchorY);line.setAttribute('x2',x);line.setAttribute('y2',y);dot.setAttribute('cx',anchorX);dot.setAttribute('cy',anchorY);pin.style.transform=`translate(${Math.round(x)}px,${Math.round(y)}px) translate(-50%,-50%)`;pin.classList.toggle('active',slot===activeSlot)}}
+function updateLabels(){
+ if(!showPrices)return;
+ const used=[],w=viewer.clientWidth,h=viewer.clientHeight;
+ const screenY=slot=>{const b=bounds.get(slot);return b?-b.getCenter(new THREE.Vector3()).setY(b.max.y+.12).project(camera).y:2};
+ for(const slot of [...slots].sort((a,b)=>screenY(a)-screenY(b))){
+  const pin=$(`[data-pin="${slot}"]`),connector=$(`[data-connector="${slot}"]`),box=bounds.get(slot);
+  connector.style.display='none';if(!box){pin.hidden=true;continue}
+  box.getCenter(projected);projected.y=box.max.y+.12;projected.project(camera);
+  const anchorX=(projected.x*.5+.5)*w,anchorY=(-projected.y*.5+.5)*h;
+  pin.hidden=projected.z>1||projected.z< -1||anchorX<10||anchorX>w-10||anchorY<40||anchorY>h-75;
+  if(pin.hidden)continue;
+  const pw=pin.offsetWidth,ph=pin.offsetHeight,candidates=[];
+  const x=Math.max(pw/2+8,Math.min(w-pw/2-8,anchorX));
+  for(const dx of [0,-pw-8,pw+8])for(const dy of [0,-1,1,-2,2,-3,3])candidates.push({x:x+dx,y:anchorY-22+dy*(ph+8)});
+  const place=candidates.find(c=>c.x-pw/2>=8&&c.x+pw/2<=w-8&&c.y-ph/2>=65&&c.y+ph/2<=h-135&&!used.some(r=>Math.abs(r.x-c.x)<(r.w+pw)/2+6&&Math.abs(r.y-c.y)<(r.h+ph)/2+6));
+  if(!place){pin.hidden=true;continue}
+  used.push({...place,w:pw,h:ph});connector.style.display='';
+  const line=connector.querySelector('line'),dot=connector.querySelector('circle');
+  line.setAttribute('x1',anchorX);line.setAttribute('y1',anchorY);line.setAttribute('x2',place.x);line.setAttribute('y2',place.y);dot.setAttribute('cx',anchorX);dot.setAttribute('cy',anchorY);
+  pin.style.transform=`translate(${Math.round(place.x)}px,${Math.round(place.y)}px) translate(-50%,-50%)`;pin.classList.toggle('active',slot===activeSlot);
+ }
+}
 function fallback(message){ready=false;$('#room-loading').hidden=true;$('#room-fallback').hidden=false;$('#price-labels').hidden=true;viewer.querySelector('canvas')?.remove();$('#room-reset').disabled=true;$('#room-fullscreen').disabled=true;$('#room-light').disabled=false;$$('[data-mode]').forEach(b=>b.disabled=true);status.textContent=message||'Не удалось открыть 3D. Соберите интерьер в конструкторе и списке мебели.';cancelAnimationFrame(frame);renderer?.dispose();controls?.dispose();renderInspector();document.body.dataset.roomReady='fallback'}
 $('#room-retry').addEventListener('click',()=>location.reload());
 sync();persist();

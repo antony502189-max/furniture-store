@@ -2,7 +2,7 @@
   {
     "id": "modern-armchair",
     "title": "Кресло «Линия»",
-    "price": 24900,
+    "price": 890,
     "image": "assets/photos/oak-armchair.webp",
     "category": "Кресла",
     "material": "Ткань",
@@ -20,7 +20,7 @@
   {
     "id": "egg-chair",
     "title": "Кресло «Кокон»",
-    "price": 28900,
+    "price": 990,
     "image": "assets/photos/egg-chair.webp",
     "category": "Кресла",
     "material": "Ткань",
@@ -37,7 +37,7 @@
   {
     "id": "chaise-lounge",
     "title": "Шезлонг «Пауза»",
-    "price": 45900,
+    "price": 1590,
     "image": "assets/photos/lounge-chair.webp",
     "category": "Кресла",
     "material": "Ткань",
@@ -54,7 +54,7 @@
   {
     "id": "modern-chair",
     "title": "Стул «Форма»",
-    "price": 12900,
+    "price": 450,
     "image": "assets/photos/modern-chair.webp",
     "category": "Стулья",
     "material": "Дерево",
@@ -71,7 +71,7 @@
   {
     "id": "folding-table",
     "title": "Консоль «Ритм»",
-    "price": 16900,
+    "price": 590,
     "image": "assets/photos/console-table.webp",
     "category": "Столы",
     "material": "Дерево",
@@ -88,7 +88,7 @@
   {
     "id": "classic-armchair",
     "title": "Кресло «Тихо»",
-    "price": 18900,
+    "price": 690,
     "image": "assets/photos/classic-armchair.webp",
     "category": "Кресла",
     "material": "Ткань",
@@ -105,7 +105,7 @@
   {
     "id": "papasan-chair",
     "title": "Стул «Ротанг»",
-    "price": 15900,
+    "price": 550,
     "image": "assets/photos/rattan-chair.webp",
     "category": "Стулья",
     "material": "Ротанг",
@@ -121,7 +121,7 @@
   {
     "id": "coffee-table",
     "title": "Столик «Круг»",
-    "price": 14900,
+    "price": 520,
     "image": "assets/photos/coffee-table.webp",
     "category": "Столы",
     "material": "Дерево",
@@ -138,7 +138,7 @@
   {
     "id": "classic-chair",
     "title": "Стул «Мягкий»",
-    "price": 9900,
+    "price": 350,
     "image": "assets/photos/upholstered-chair.webp",
     "category": "Стулья",
     "material": "Ткань",
@@ -155,7 +155,7 @@
   {
     "id": "bar-stool",
     "title": "Табурет «Дуб»",
-    "price": 7900,
+    "price": 290,
     "image": "assets/photos/oak-stool.webp",
     "category": "Стулья",
     "material": "Дерево",
@@ -172,7 +172,7 @@
   {
     "id": "nightstand",
     "title": "Тумба «Порядок»",
-    "price": 8900,
+    "price": 320,
     "image": "assets/photos/nightstand.webp",
     "category": "Хранение",
     "material": "Дерево",
@@ -189,7 +189,7 @@
   {
     "id": "white-table",
     "title": "Стол «Свет»",
-    "price": 25900,
+    "price": 890,
     "image": "assets/photos/white-table.webp",
     "category": "Столы",
     "material": "Дерево",
@@ -206,7 +206,7 @@
   {
     "id": "modern-bed",
     "title": "Кровать «Утро»",
-    "price": 68900,
+    "price": 2390,
     "image": "assets/photos/bed.webp",
     "category": "Кровати",
     "material": "Дерево",
@@ -223,7 +223,7 @@
   {
     "id": "sofa",
     "title": "Диван «Мох»",
-    "price": 64900,
+    "price": 2290,
     "image": "assets/photos/sofa.webp",
     "category": "Диваны",
     "material": "Ткань",
@@ -242,7 +242,7 @@
   {
     "id": "floor-lamp",
     "title": "Торшер «Тёплый свет»",
-    "price": 11900,
+    "price": 420,
     "image": "assets/photos/reading-corner.webp",
     "category": "Свет",
     "material": "Металл",
@@ -259,7 +259,7 @@
   {
     "id": "sideboard",
     "title": "Комод «Горизонт»",
-    "price": 32900,
+    "price": 1150,
     "image": "assets/photos/console-table.webp",
     "category": "Хранение",
     "material": "Дерево",

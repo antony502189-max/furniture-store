@@ -21,7 +21,8 @@ class Page(HTMLParser):
  def handle_data(self,text):
   if self.in_select and not self.in_option and text.strip():self.bad_select.append(text)
 for file in ROOT.glob('*.html'):
- p=Page();p.feed(file.read_text());assert p.lang=='ru',file
+ text=file.read_text();assert '₽' not in text and 'RUB' not in text,('wrong currency',file)
+ p=Page();p.feed(text);assert p.lang=='ru',file
  assert p.h1==1,(file,p.h1)
  assert len(p.ids)==len(set(p.ids)),('duplicate ids',file)
  assert not p.bad_select,('invalid options',file,p.bad_select)
@@ -50,3 +51,7 @@ assert {'sofa','coffee-table','modern-armchair','nightstand','floor-lamp','class
 assert len(raw)<4_000_000
 assert all('uri' not in b for b in gltf['buffers']), 'GLB must be self-contained'
 print('PASS 16 catalog products, local Three.js imports, embedded Blender model and 7 selectable groups')
+
+assert "currency:'BYN'" in (ROOT/'store.js').read_text()
+assert not re.search(r'RUB|₽', (ROOT/'store.js').read_text())
+print('PASS all shipped prices use BYN')
